@@ -30,9 +30,9 @@ u8 mark=1;
 void LED_init(void)
 {
     //LED
-    gpio_init  (PORTC, 1, GPO, HIGH);
-    gpio_init  (PORTC, 2, GPO, HIGH);          
-    gpio_init  (PORTC, 3, GPO, HIGH);
+    gpio_init  (PORTA, 12, GPO, HIGH);
+    gpio_init  (PORTA, 13, GPO, HIGH);          
+    gpio_init  (PORTA, 15, GPO, HIGH);
     
     
     gpio_init  (PORTA, 4, GPO, LOW);
@@ -43,12 +43,17 @@ void LED_init(void)
     gpio_init  (PORTE, 26, GPO, LOW); 
     
     //触摸开关
-    gpio_init  (PORTC, 18, GPI, LOW);
+//    gpio_init  (PORTC, 18, GPI, LOW);
     
     //红外
-    gpio_init  (PORTE, 4, GPI, LOW);
-    gpio_init  (PORTE, 5, GPI, LOW);
-    gpio_init  (PORTE, 6, GPI, LOW);
+//    gpio_init  (PORTE, 4, GPI, LOW);
+//    gpio_init  (PORTE, 5, GPI, LOW);
+//    gpio_init  (PORTE, 6, GPI, LOW);
+    
+    //蜂鸣器
+    gpio_init(PORTC, 14, GPO, LOW);   
+    //超声波引脚定义
+    gpio_init  (PORTC, 1, GPO, LOW);   //Trig
     
 }
 
@@ -69,23 +74,23 @@ void LED(LEDn ledn,LED_status status)
         case 1:
         {
             if(status)
-                PTC1_OUT=0;
+                PTA12_OUT=0;
             else
-                PTC1_OUT=1;
+                PTA12_OUT=1;
         }break;
         case 2:
         {
             if(status)
-                PTC2_OUT=0;
+                PTA13_OUT=0;
             else
-                PTC2_OUT=1;
+                PTA13_OUT=1;
         }break;
         case 3:
         {
             if(status)
-                PTC3_OUT=0;
+                PTA15_OUT=0;
             else
-                PTC3_OUT=1;
+                PTA15_OUT=1;
         }break;        
         case 4:
         {

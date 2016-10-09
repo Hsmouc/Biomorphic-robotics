@@ -19,7 +19,6 @@
 *            n           端口引脚
 *            exti_cfg    触发选项和上拉下拉选项
 *  函数返回：无
-*  修改时间：2012-1-20
 *  备    注：
 *************************************************************************/
 void  exti_init(PORTx portx, u8 n, exti_cfg cfg)
@@ -30,3 +29,5 @@ void  exti_init(PORTx portx, u8 n, exti_cfg cfg)
     GPIO_PDDR_REG(GPIOx[portx]) &= ~(1 << n);       //输入模式
     enable_irq(portx + 87);                         //使能PORT中断，PORTA的ISR中断号为87
 }
+
+

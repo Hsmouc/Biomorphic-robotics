@@ -38,7 +38,7 @@
 #define PCA9685_LED5_OFF_L        0x1c
 #define PCA9685_LED5_OFF_H        0x1d
 #define PCA9685_LED6_ON_L        0x1e
-#define PCA9685_LED6_ON_H        0x1d
+#define PCA9685_LED6_ON_H        0x1f
 #define PCA9685_LED6_OFF_L        0x20
 #define PCA9685_LED6_OFF_H        0x21
 #define PCA9685_LED7_ON_L        0x22

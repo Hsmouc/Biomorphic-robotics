@@ -13,7 +13,7 @@
  */
 
 #include "common.h"
-#include "include.h"
+
 //const char ASSERT_FAILED_STR[] = "Assertion failed in %s at line %d\n";
 const char ASSERT_FAILED_STR[] = "断言发生在%s文件的第%d行！\n断言条件不成立，请检测错误原因。\t—— by**\n\n";
 

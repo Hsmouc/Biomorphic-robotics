@@ -1,3 +1,7 @@
+#ifndef __IIC_H__
+#define __IIC_H__
+
+
 
 void DelayUs(unsigned int us);
 void DelayMs(unsigned int ms);
@@ -14,3 +18,6 @@ char i2cWriteBuffer(unsigned char addr, unsigned char reg, unsigned char len, un
 char i2cRead(unsigned char addr, unsigned char reg, unsigned char len, unsigned char *buf);
 unsigned char HMC5883_RecvByte(void);
 void HMC5883_SendByte(unsigned char dat);
+
+
+#endif

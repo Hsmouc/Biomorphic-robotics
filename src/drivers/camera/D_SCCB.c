@@ -9,6 +9,7 @@
 
 #include "common.h"
 #include "include.h"
+#include "default.h"
 
 static void SCCB_delay(uint16 i);
 

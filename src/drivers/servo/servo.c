@@ -12,8 +12,6 @@ u32 temp_time[32];
 u8  temp_servo_num[32];
 u32 angle_now;
 u8 servo_init_mark;
-u8 servo_run_over[32];
-u8 servo_control_mark=1;
 
 u8 k;
 

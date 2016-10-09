@@ -110,7 +110,7 @@ typedef	union
 
 #include  "sysinit.h"           //系统配置
 #include "mcg.h"
-#include "drivers_cfg.h"   //管脚复用配置
+#include "fire_drivers_cfg.h"   //管脚复用配置
 
 
 
@@ -146,17 +146,41 @@ B16(10101010,01010101) = 43605
 B32(10000000,11111111,10101010,01010101) = 2164238933
 */
 //定义全局变量
+extern u8  servo_time_mark;   //舵机执行时间中断标志
+extern u8 interrupt_mark1;    //中断标志1
+extern u8 servo_init_mark;
+extern u8  servo_run_over[32];
 
-extern volatile u8 img_flag;
-
-//extern u8 image_bin[9600]; 
-//extern u8 img[76800];
-
-
+extern u32 receive_add;
+extern u8 uart_Rx_dat[10000]; 
+extern u8 receive_true_mark;
+extern u8 uart_receive_mark;
 
 
+///////////////////////////////
+extern u8 system_mark;   //系统开始标志
+extern u8 system_run_mark;    //舵机运行标志
+extern u8 Offline_RUN;
+extern u8 ONline_RUN;
+extern u8 servo_SQ;  //动作组编号
+extern u8 servo_group_num[100];        //动作组中动作个数
+extern u8 servo_dat[5000]; 
+extern u8 servo_run_over_mark; 
+extern u8 servo_mark;
+extern u8 servo_control_mark; 
+extern u32 servo_position_now[32];    //当前位置
 
+
+extern u8 hw_read_mark;     //开红外标志
+
+extern u32 distance;
+
+extern float Pitch;//俯仰
+extern float Roll;//翻滚
+extern float Yaw;//偏航
 
 /********************************************************************/
 
 #endif /* _COMMON_H_ */
+
+extern volatile u8 img_flag;

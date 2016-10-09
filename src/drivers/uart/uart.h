@@ -1,15 +1,9 @@
-/******************** (C) COPYRIGHT 2011 野火嵌入式开发工作室 ********************
+/******************** ********************
  * 文件名       ：uart.h
  * 描述         ：串口相关函数的头文件
  * 备注         ：
  *
- * 实验平台     ：野火kinetis开发板
- * 库版本       ：
- * 嵌入系统     ：
- *
- * 作者         ：
- * 淘宝店       ：http://firestm32.taobao.com
- * 技术支持论坛 ：http://www.ourdev.cn/bbs/bbs_list.jsp?bbs_id=1008
+
 **********************************************************************************/
 
 #ifndef __UART_H__
@@ -41,7 +35,7 @@ int uart_query      (UARTn);                          //查询是否接收到一个字节
 char uart_querychar (UARTn uratn, char *ch);           //查询是否接收到一个字节
 
 void uart_putchar   (UARTn, char ch);                //发送1个字节
-void uart_sendN     (UARTn , uint8 *buff, uint32 len); //发送n个字节
+void uart_sendN     (UARTn , uint8 *buff, uint16 len); //发送n个字节
 void uart_sendStr   (UARTn , const u8 *str);          //发送字符串
 
 
@@ -55,7 +49,9 @@ void uart_irq_DIS   (UARTn);                          //关串口接收中断
 
 
 
-
+#undef  VECTOR_069
+#define VECTOR_069    uart_irq_Receive     //重新定义69号中断为uart_irq_Receive中断
+extern void uart_irq_Receive();            //uart4 串口接收中断服务函数
 /********************************************************************/
 
 #endif /* __UART_H__ */

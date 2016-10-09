@@ -224,7 +224,7 @@ void Servo_Run(u8 num,u32 pos)
 
 }
 
-//舵机实时位置
+//单舵机实时位置
 u32 SERVO_Angle(u32 angle_temp,u32 angle_set,u32 T)
 {
     if(servo_time_mark)       
@@ -276,10 +276,10 @@ void SERVO_Control_all(void)
 
     for(k=0;k<32;k++)
     {
-          if(temp_time[k]!=0)
+          if(temp_time[k]!=0)    //如果舵机运行时间不为零
           {
-              servo_time[k]=servo_time[k]+1;
-              if(servo_time[k]>=temp_time[k])
+              servo_time[k]=servo_time[k]+1;    //运行时间累加
+              if(servo_time[k]>=temp_time[k])   //累加到舵机运行时间，舵机位置运行一步
               {
                   servo_time[k]=0;
                   if(servo_position_now[k]<temp_position[k])
@@ -298,7 +298,7 @@ void SERVO_Control_all(void)
                   } 
               }
           }
-          else
+          else               //如果舵机运行时间为零  舵机位置直接等于目标位置
           {
                  servo_position_now[k]=temp_position[k];
                  servo_time[k]=0;
@@ -317,13 +317,13 @@ void SERVO_control(u8* servo_num,u32* position_now,u32* time_now)
     for(kk=0;kk<32;kk++)
     {
         temp_position[kk] = position_now[kk];
-        if(servo_init_mark)     //没有此操作，上电时舵机都会回一次原点    
-            temp_time[kk] = 0;
-        else
+//        if(servo_init_mark)     //没有此操作，上电时舵机都会回一次原点    
+//            temp_time[kk] = 0;
+//        else
             temp_time[kk] = time_now[kk];
         Servo_Run(servo_num[kk]-1,servo_position_now[kk]);
     }
-    servo_init_mark=0;     //舵机上电标志清零
+//    servo_init_mark=0;     //舵机上电标志清零
 }
 
 

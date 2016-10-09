@@ -11,14 +11,14 @@
 volatile struct UART_MemMap *UARTx[6] = {UART0_BASE_PTR, UART1_BASE_PTR, UART2_BASE_PTR, UART3_BASE_PTR, UART4_BASE_PTR, UART5_BASE_PTR}; //定义五个指针数组保存 UARTx 的地址
 
 /*************************************************************************
-
 *
 *  函数名称：uart_init
 *  功能说明：初始化串口，设置波特率
 *  参数说明：UARTn       模块号（UART0~UART5）
 *            baud        波特率，如9600、19200、56000、115200等
 *  函数返回：无
-
+*  修改时间：2012-1-20
+*  备    注：在官方例程上修改
 *************************************************************************/
 void uart_init (UARTn uratn, u32 baud)
 {
@@ -180,13 +180,13 @@ void uart_init (UARTn uratn, u32 baud)
 }
 
 /*************************************************************************
-
 *
 *  函数名称：uart_getchar
 *  功能说明：无限时间等待串口接受一个字节
 *  参数说明：UARTn       模块号（UART0~UART5）
 *  函数返回：接收到的字节
-
+*  修改时间：2012-1-20
+*  备    注：官方例程
 *************************************************************************/
 char uart_getchar (UARTn uratn)
 {
@@ -198,14 +198,14 @@ char uart_getchar (UARTn uratn)
 }
 
 /*************************************************************************
-
 *
 *  函数名称：uart_query
 *  功能说明：查询是否接受到一个字节
 *  参数说明：UARTn       模块号（UART0~UART5）
 *  函数返回：1           接收到一个字节了
 *            0           没有接收到
-
+*  修改时间：2012-1-20
+*  备    注：官方例程
 *************************************************************************/
 int uart_query (UARTn uratn)
 {
@@ -230,20 +230,18 @@ char uart_querychar (UARTn uratn, char *ch)
 }
 
 
-
-
 /*************************************************************************
 *
 *  函数名称：uart_pendchar
 *  功能说明：有限时间等待串口接受一个字节
 *  参数说明：UARTn       模块号（UART0~UART5）
 *  函数返回：接收到的字节
-
+*  修改时间：2012-1-20
+*  备    注：
 *************************************************************************/
 char uart_pendchar (UARTn uratn, char *ch)
 {
     u32 i = 0;
-
     while(++i < 0xffff)                                         //时间限制
     {
         if(UART_S1_REG(UARTx[uratn]) & UART_S1_RDRF_MASK)         //查询是否接受到数据
@@ -264,12 +262,13 @@ char uart_pendchar (UARTn uratn, char *ch)
 *  功能说明：有限时间等待串口接受字符串
 *  参数说明：UARTn       模块号（UART0~UART5）
 *  函数返回：接收到的字节
-
+*  修改时间：2012-1-20
+*  备    注：
 *************************************************************************/
 char uart_pendstr (UARTn uratn, char *str)
 {
     u32 i = 0;
-    while(uart_pendchar(uratn, str + i++));
+    while(uart_pendchar(uratn, str + i++))receive_add++;
 
     return (i <= 1 ? 0 : 1);
 }
@@ -282,7 +281,8 @@ char uart_pendstr (UARTn uratn, char *str)
 *  功能说明：串口发送一个字节
 *  参数说明：UARTn       模块号（UART0~UART5）
 *  函数返回：无
-
+*  修改时间：2012-1-20
+*  备    注：官方例程，printf会调用这函数
 *************************************************************************/
 void uart_putchar (UARTn uratn, char ch)
 {
@@ -297,7 +297,6 @@ void uart_putchar (UARTn uratn, char ch)
 
 
 /*************************************************************************
-
 *
 *  函数名称：uart_sendN
 *  功能说明：串行 发送指定len个字节长度字符串 （包括 NULL 也会发送）
@@ -305,21 +304,15 @@ void uart_putchar (UARTn uratn, char ch)
 *            buff        发送缓冲区
 *            len         发送长度
 *  函数返回：无
-
+*  修改时间：2012-1-20
+*  备    注：
 *************************************************************************/
-void uart_sendN (UARTn uratn, uint8 *buff, uint32 len)
+void uart_sendN (UARTn uratn, uint8 *buff, uint16 len)
 {
-/*
     int i;
     for(i = 0; i < len; i++)
     {
         uart_putchar(uratn, buff[i]);
-    }
-*/ 
-    while(len--)
-    {
-        uart_putchar(uratn, *buff);
-        buff++;
     }
 }
 
@@ -330,7 +323,8 @@ void uart_sendN (UARTn uratn, uint8 *buff, uint32 len)
 *  参数说明：UARTn       模块号（UART0~UART5）
 *            str         字符串
 *  函数返回：无
-
+*  修改时间：2012-1-20
+*  备    注：
 *************************************************************************/
 void uart_sendStr (UARTn uratn, const u8 *str)
 {
@@ -346,7 +340,8 @@ void uart_sendStr (UARTn uratn, const u8 *str)
 *  功能说明：开串口接收中断
 *  参数说明：UARTn       模块号（UART0~UART5）
 *  函数返回：无
-
+*  修改时间：2012-1-20
+*  备    注：
 *************************************************************************/
 void uart_irq_EN(UARTn uratn)
 {
@@ -361,11 +356,64 @@ void uart_irq_EN(UARTn uratn)
 *  功能说明：关串口接收中断
 *  参数说明：UARTn       模块号（UART0~UART5）
 *  函数返回：无
-
+*  修改时间：2012-1-20
+*  备    注：
 *************************************************************************/
 void uart_irq_DIS(UARTn uratn)
 {
     UART_C2_REG(UARTx[uratn]) &= ~UART_C2_RIE_MASK;   //禁止UART接收中断
     disable_irq((uratn << 1) + 45);			        //关接收引脚的IRQ中断
 }
+
+u8 temp_Rx_dat;
+u8 temp_Rx_dat1;
+u8 temp_Rx_dat2;
+
+void uart_irq_Receive(void)
+{
+      if(uart_query(UART4))
+      {
+          temp_Rx_dat=uart_getchar(UART4); 
+//          uart_putchar(UART4,temp_Rx_dat);     //调试用
+          
+          if(receive_true_mark==2)
+          {
+              uart_Rx_dat[receive_add+2]=temp_Rx_dat;
+              receive_add++;
+          }
+          switch(temp_Rx_dat)
+          {
+              case 0x40:
+              {                  
+                  temp_Rx_dat1=temp_Rx_dat;
+                  receive_true_mark=1;
+              }break;
+              case 0x5b:
+              {
+                   if(receive_true_mark==1)
+                   {
+                      temp_Rx_dat2=temp_Rx_dat;
+                      receive_true_mark=2;
+                      
+                      uart_Rx_dat[0]=temp_Rx_dat1;
+                      uart_Rx_dat[1]=temp_Rx_dat2;
+                      receive_add=0;
+                   }
+                   else
+                      receive_true_mark=0;
+              }break;          
+          }
+          
+          if(uart_Rx_dat[receive_add]==0x5d&& uart_Rx_dat[receive_add+1]==0x25)
+          {
+              receive_true_mark=0;
+              receive_add = receive_add+2;
+              uart_receive_mark=1;
+              
+//              uart_sendN(UART4, uart_Rx_dat,receive_add);     //调试用
+          }
+      }
+}
+
+
 

@@ -157,7 +157,7 @@ void cpu_identify (void)
         printf("256pin      ");
         break;
     default:
-        printf("package code.      ");
+        printf("\package code.      ");
         break;
     }
 
