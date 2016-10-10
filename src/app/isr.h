@@ -66,6 +66,8 @@ extern void PIT1_IRQHandler();                 //PIT1 定时中断服务函数
 #define VECTOR_107    PORTE_IRQHandler    //PORTA中断
 extern void PORTE_IRQHandler();           //PORTA中断服务函数
 
+extern void motionCtr();
+extern void motionSwitch(int);
 
 #endif  //__ISR_H
 

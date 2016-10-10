@@ -108,7 +108,7 @@ void spi_init(SPIn spin,SPI_CFG master)
 void spi_send(SPIn spin,u8 data[],u32 len)
 {
     u32 i = 0;
-    u8 temp;
+   // u8 temp;
     SPI_TX_WAIT(spin);
 
     do
@@ -138,7 +138,7 @@ void spi_send(SPIn spin,u8 data[],u32 len)
                                 | SPI_PUSHR_TXDATA(data[i]);    //要传输的数据
         
         while( !(SPI_SR_REG(SPIN[spin]) & SPI_SR_RFDF_MASK));    //RFDF为1，Rx FIFO is not empty.
-        temp = (u8)SPI_POPR_REG(SPIN[spin]);    //读取一次接收的数据    
+        //temp = (u8)SPI_POPR_REG(SPIN[spin]);    //读取一次接收的数据    
         SPI_SR_REG(SPIN[spin]) |= SPI_SR_RFDF_MASK;
     }
 
@@ -151,7 +151,7 @@ void spi_send(SPIn spin,u8 data[],u32 len)
     SPI_EOQF_WAIT(spin);    //要及时把RX FIFO的东西清掉，不然这里就无限等待
     
     while( !(SPI_SR_REG(SPIN[spin]) & SPI_SR_RFDF_MASK));    //RFDF为1，Rx FIFO is not empty.
-    temp = (u8)SPI_POPR_REG(SPIN[spin]);    //读取一次接收的数据          
+    //temp = (u8)SPI_POPR_REG(SPIN[spin]);    //读取一次接收的数据          
     //SPI_SR_REG(SPIN[spin]) |= SPI_SR_RFDF_MASK;
     
 

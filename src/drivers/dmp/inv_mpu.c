@@ -27,6 +27,7 @@
 #include "inv_mpu_dmp_motion_driver.h"
 //#include "MPU6050.h"
 #include "iic2.h"
+#include "include.h"
 
 /* The following functions must be defined for this platform:
  * i2c_write(unsigned char slave_addr, unsigned char reg_addr,

@@ -178,9 +178,8 @@ extern u32 distance;
 extern float Pitch;//¸©Ñö
 extern float Roll;//·­¹ö
 extern float Yaw;//Æ«º½
+extern volatile u8 img_flag;
 
 /********************************************************************/
 
 #endif /* _COMMON_H_ */
-
-extern volatile u8 img_flag;

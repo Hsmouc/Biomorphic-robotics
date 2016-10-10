@@ -1,5 +1,7 @@
 #include "MPU6050.h"
 #include "iic2.h"
+#include  "default.h"
+#include  "include.h"
 
 unsigned char MPU6050_ReadByte(unsigned char address)
 {

@@ -30,50 +30,16 @@ void  main(void)
   
         
     Ov7725_Init(image_bin);
-
+    motionSwitch(1);
 
     while(1)
     {
-        /*if(system_mark)
-        {
-//            //红外避障
-            if(hw_read_mark)    
-            {
-                LED(LED3,LED_ON);
-                if(PTE4_IN&&PTE6_IN)           //红外都没有信号时
-                {
-                    hw_read_mark=0;
-                    LED(LED3,LED_OFF);
-                    system_run_mark=1;
-                    servo_control_mark=1;
-                }
-            } 
-    
-            MPU6050();
-            NRF();
-            uart_Rx();
-//            wifi();
-            if(system_run_mark)
-            {
-    
-                if(ONline_RUN==1)
-                {
-                    servo_mark=1;
-                }
-                if(Offline_RUN == 1)
-                {
-                    
-                    servo_mark=2; 
-        
-                }
-                servo();
-            }
-        }*/
+       
       ov7727_get_img();
-
+      
       img_extract(image_bin,img,CAMERA_SIZE);
       sendimg(img,CAMERA_W * CAMERA_H);
-        
+      motionCtr();  
     }
 }
 

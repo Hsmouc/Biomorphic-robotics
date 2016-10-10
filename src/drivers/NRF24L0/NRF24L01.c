@@ -316,9 +316,7 @@ void NRF_TX_Mode(void)
  */ 
 void NRF_Tx_Dat(u8 *txbuf)
 {
-    u8 state=0;
-    u32 aa=0;
-    //ÅäÖÃNRF¼Ä´æÆ÷
+     //ÅäÖÃNRF¼Ä´æÆ÷
     NRF_CE_LOW();	
     
     NRF_WriteBuf(NRF_WRITE_REG+TX_ADDR,TX_ADDRESS,TX_ADR_WIDTH);    //Ð´TX½ÚµãµØÖ· 

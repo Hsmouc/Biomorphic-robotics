@@ -1929,9 +1929,6 @@
       <name>$PROJ_DIR$\src\drivers\exti\exti.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\src\drivers\mpu6050\getattitude.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\src\drivers\gpio\gpio.c</name>
     </file>
     <file>
@@ -1942,12 +1939,6 @@
     </file>
     <file>
       <name>$PROJ_DIR$\src\drivers\gpio\init_GPIO.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\src\drivers\dmp\inv_mpu.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\src\drivers\dmp\inv_mpu_dmp_motion_driver.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\src\drivers\LED\LED.C</name>

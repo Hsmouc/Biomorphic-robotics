@@ -45,7 +45,7 @@ u8 Send_Attitude[16]     = {0x40,0x5b,0x53,0x0f,0x00,0x00,0x00,0x00,0x00,0x00,0x
 u8 Send_ID[9]            = {0x40,0x5b,0x53,0x11,0x00,0x00,0x06,0x5d,0x25};         // 发送ID
 //u8 MPU6050_Dat[9]        = {0x40,0x5b,0x53,0x11,0x00,0x00,0x06,0x5d,0x25}
 
-volatile u16 Vnum=0;
+
 
 
 ///////////////////////////舵机动作////////////////////////
@@ -64,168 +64,73 @@ u8  servo_run_over[32];        //舵机达到设置位置标志
 u8  servo_run_over_mark=1;     //舵机全部达到指定位置标志
 u8 servo_control_mark=1; 
 
-void servo()
-{     
-    //读取动作
-    if(servo_mark==1)           //在线
-    {
-       
-      
-        //首先读取舵机当前值      
-        for(i=0;i<32;i++)
-        {
-            servo_position_set[ i ] = servo_position_now[ i ];
-        }
-        //单个舵机调试时
-         if(servo_num==1)        
-         {
-              for(i=0;i<32;i++)
-              {            
-                  if(i==(servo_dat[ 0 ]-1))
-                  {
-                      servo_num_set[ i ] = servo_dat[ 0 ];
-                      servo_position_set[ i ] = (servo_dat[ 1 ]*256 + servo_dat[ 2 ])/5;
-                      servo_time_set[ i ] = (servo_dat[ 3 ]*256 + servo_dat[ 4 ])/100;
-                  }
-              }  
-         }
-         else     //多个舵机
-         {
-              j=0;
-              for(i=0;i<32;i++)
-              {            
-                  if(j<servo_num)
-                  {
-                      if(i==(servo_dat[ 5*j ]-1))
-                      {
-                          servo_num_set[ i ] = servo_dat[ 5*j ];
-                          servo_position_set[ i ] = (servo_dat[ 5*j + 1]*256 + servo_dat[ 5*j + 2 ])/5;
-                          servo_time_set[ i] = (servo_dat[ 5*j + 3 ]*256 + servo_dat[ 5*j + 4])/100;
-                          j++;
-                      }
-                  }
-              }
-         }
-        
-        
-        
-        SERVO_control(servo_num_set,servo_position_set,servo_time_set);  
-        SERVO_run_all();
+void motionSwitch(int flag){
+  system_run_mark=1;
+  servo_control_mark=1;
+  //read_mark=1;
+  if(flag == 1){
+    LED(LED1,LED_ON);
+    LED(LED2,LED_OFF);    
+    servo_SQ=0;
+    servo_group_num[servo_SQ]=ReadAT24C1024_byte(servo_SQ*5000,0x00);
+    if(servo_group_num[servo_SQ]!=0){
+      ReadAT24C1024_flash(servo_dat,servo_SQ*5000+1,0x00,servo_group_num[servo_SQ]*160); 
     }
-    else if(servo_mark==2)     //离线
-    {
-
-        j=0;
-        while(j<servo_group_num[servo_SQ])
-        {
-
-
-            if(servo_run_over_mark)  //所有舵机到达设置位置后读取下一个动作值
-            {
-                                 
-                for(i=0;i<32;i++)
-                {
-                    servo_run_over[i]=0;    
-                }
-                for(i=0;i<32;i++)
-                {                       
-
-                    if((servo_dat[ 160*j + 5*i ]-1)==i)
-                    {
-                        servo_num_set[i]=servo_dat[ 160*j + 5*i ];
-                        servo_position_set[i]=(servo_dat[ 160*j + 5*i + 1]*256 + servo_dat[ 160*j + 5*i + 2 ])/5;
-                        servo_time_set[i]=(servo_dat[ 160*j + 5*i + 3 ]*256 + servo_dat[ 160*j + 5*i + 4])/100;
-                    }
-
-                    
-                } 
-                SERVO_control(servo_num_set,servo_position_set,servo_time_set);
-
-                j++;
-            }
-
-            servo_run_over_mark=1;
-
-            SERVO_run_all();
-            //检测舵机是否全部到达指定位置
-            for(i=0;i<32;i++)
-            {
-                servo_run_over_mark=servo_run_over_mark&&servo_run_over[i];    
-            }
-        }
-      
- 
+  }
+  if(flag == 2){
+    LED(LED1,LED_OFF);
+    LED(LED2,LED_ON);    
+    servo_SQ=1;
+    servo_group_num[servo_SQ]=ReadAT24C1024_byte(servo_SQ*5000,0x00);
+    if(servo_group_num[servo_SQ]!=0){
+      ReadAT24C1024_flash(servo_dat,servo_SQ*5000+1,0x00,servo_group_num[servo_SQ]*160); 
     }
+  }
+  if(flag == 3){
+    LED(LED1,LED_OFF);
+    LED(LED2,LED_ON);    
+    servo_SQ=2;
+    servo_group_num[servo_SQ]=ReadAT24C1024_byte(servo_SQ*5000,0x00);
+    if(servo_group_num[servo_SQ]!=0){
+      ReadAT24C1024_flash(servo_dat,servo_SQ*5000+1,0x00,servo_group_num[servo_SQ]*160); 
+    }
+  }
+  servo_run_over_mark=1;
+  motionCtr();
+}
+
+void motionCtr(){
+  j=0;
+  while(j<servo_group_num[servo_SQ]){
+    if(servo_run_over_mark)  //所有舵机到达设置位置后读取下一个动作值
+    {
+      for(i=0;i<32;i++){
+        servo_run_over[i]=0;    
+      }
+      for(i=0;i<32;i++){
+        if((servo_dat[ 160*j + 5*i ]-1)==i){
+          servo_num_set[i]=servo_dat[ 160*j + 5*i ];
+          servo_position_set[i]=(servo_dat[ 160*j + 5*i + 1]*256 + servo_dat[ 160*j + 5*i + 2 ])/5;
+          servo_time_set[i]=(servo_dat[ 160*j + 5*i + 3 ]*256 + servo_dat[ 160*j + 5*i + 4])/100;
+        }
+      } 
+      SERVO_control(servo_num_set,servo_position_set,servo_time_set);
+      j++;
+     }
+    servo_run_over_mark=1;
+    SERVO_run_all();
+    //检测舵机是否全部到达指定位置
+    for(i=0;i<32;i++){
+      servo_run_over_mark=servo_run_over_mark&&servo_run_over[i];    
+    }
+  } 
 }
 
 
-///////////////////////////姿态读取////////////////////////
-int temp_Pitch;
-int temp_Roll;
-int temp_Yaw;
 
 
-u16 Attitude[6];
 
 
-void MPU6050()
-{
-      zitaishuju();
-      temp_Pitch=Pitch;
-      temp_Roll=Roll;
-      temp_Yaw=Yaw;
-      if(temp_Pitch<0)
-      {
-          Pitch=fabs(Pitch);
-          Send_Attitude[4]=45;
-      }
-      else
-      {
-          Pitch=Pitch;
-          Send_Attitude[4]=43;
-      }
-      
-      if(Roll<0)
-      {
-          Roll=fabs(Roll);
-          Send_Attitude[7]=45;
-      }
-      else
-      {
-          Roll=Roll;
-          Send_Attitude[7]=43;
-      }
-      
-      if(Yaw<0)
-      {
-          Yaw=fabs(Yaw);
-          Send_Attitude[10]=45;
-      }
-      else
-      {
-          Yaw=Yaw;
-          Send_Attitude[10]=43;
-      }
-      //提取整数部分和小数部分
-      Attitude[0]=Pitch;
-      Attitude[1]=(Pitch-Attitude[0])*100;
-      Attitude[2]=Roll;
-      Attitude[3]=(Roll-Attitude[2])*100;
-      Attitude[4]=Yaw;
-      Attitude[5]=(Yaw-Attitude[4])*100;
-      
-      
-      Send_Attitude[5]=Attitude[0];
-      Send_Attitude[6]=Attitude[1];
-
-      Send_Attitude[8]=Attitude[2];
-      Send_Attitude[9]=Attitude[3];
-
-      Send_Attitude[11]=Attitude[4];
-      Send_Attitude[12]=Attitude[5];      
-    
-    
-}
 
 ///////////////////////////电压检测////////////////////////
 u16 vol;
@@ -252,35 +157,6 @@ void Voltage()
 */      
 }
 
-
-////////////////////////超声波测距////////////////////////////////
-u32 time_val;
-u8 succeed_flag;
-u8 fail_flag;
-u16 wait_time;
-u32 distance;
-void Ultrasonic()
-{
-      if(fail_flag==0)
-      {
-          PTC1_OUT=1;
-          DelayUs(30);
-          PTC1_OUT=0;  
-          wait_time=0;
-          while(PTC2_IN==0&&wait_time<500)wait_time++;          
-          if(PTC2_IN)
-          {
-              pit_time_start(PIT0);                 //开始计时
-              fail_flag=1; 
-          }
-      }
-      if(succeed_flag==1)
-      {
-          succeed_flag=0;
-          fail_flag=0;
-          distance=time_val*0.172;     //单位mm
-      }
-}
 
 /////////////////////////串口接收数据/////////////////////////////////////
 u8 uart_Rx_dat[10000];
@@ -919,8 +795,7 @@ void system_init()
     Servo_Init();               //舵机初始化
     NRF_Init();                 //无线通信初始化
     AT24C1024_Init();           //存储初始化
-    MPU6050_Init();             //姿态传感器初始化
-    DMP_init();                 
+    MPU6050_Init();             //姿态传感器初始化                
     ADC_Init(ADC1, 3, 20);     //初始化AD1位单通道20输入，转换结果16bit, 查询模式  电压检测
     
     pit_init_ms(PIT1, 100);      //初始化PIT1    
