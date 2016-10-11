@@ -28,7 +28,7 @@ u8 system_mark;   //系统开始标志
 u8 Motor_dat[30];      // 电机信息
 u8 Offline_RUN;
 u8 ONline_RUN;
-
+u8 servo_SQ;
 /////////////////////////////下位机反馈数据///////////////////////////////
 u8 Send_Voltage[9]       = {0x40,0x5b,0x53,0x01,0x00,0x00,0x06,0x5d,0x25};    // 发送电压
 u8 Send_Ampere[9]        = {0x40,0x5b,0x53,0x02,0x00,0x00,0x06,0x5d,0x25};     // 发送电流
@@ -50,7 +50,6 @@ u8 Send_ID[9]            = {0x40,0x5b,0x53,0x11,0x00,0x00,0x06,0x5d,0x25};      
 
 ///////////////////////////舵机动作////////////////////////
 //每个动作组是由一个或多个动作组成，每个动作是由一个或多个舵机组成
-u8 servo_SQ;  //动作组编号
 // 存放顺序 舵机号 1个字节 舵机位置 2个字节 运行时间 2个字节
 // 每个舵机信息5个字节，一个动作32个舵机信息
 u8 servo_dat[5000]; 
@@ -64,37 +63,19 @@ u8  servo_run_over[32];        //舵机达到设置位置标志
 u8  servo_run_over_mark=1;     //舵机全部达到指定位置标志
 u8 servo_control_mark=1; 
 
-void motionSwitch(int flag){
+void motionSwitch(u8 flag){
   system_run_mark=1;
   servo_control_mark=1;
   //read_mark=1;
-  if(flag == 1){
     LED(LED1,LED_ON);
     LED(LED2,LED_OFF);    
-    servo_SQ=0;
+    servo_SQ=flag;
     servo_group_num[servo_SQ]=ReadAT24C1024_byte(servo_SQ*5000,0x00);
     if(servo_group_num[servo_SQ]!=0){
       ReadAT24C1024_flash(servo_dat,servo_SQ*5000+1,0x00,servo_group_num[servo_SQ]*160); 
     }
-  }
-  if(flag == 2){
-    LED(LED1,LED_OFF);
-    LED(LED2,LED_ON);    
-    servo_SQ=1;
-    servo_group_num[servo_SQ]=ReadAT24C1024_byte(servo_SQ*5000,0x00);
-    if(servo_group_num[servo_SQ]!=0){
-      ReadAT24C1024_flash(servo_dat,servo_SQ*5000+1,0x00,servo_group_num[servo_SQ]*160); 
-    }
-  }
-  if(flag == 3){
-    LED(LED1,LED_OFF);
-    LED(LED2,LED_ON);    
-    servo_SQ=2;
-    servo_group_num[servo_SQ]=ReadAT24C1024_byte(servo_SQ*5000,0x00);
-    if(servo_group_num[servo_SQ]!=0){
-      ReadAT24C1024_flash(servo_dat,servo_SQ*5000+1,0x00,servo_group_num[servo_SQ]*160); 
-    }
-  }
+  
+
   servo_run_over_mark=1;
   motionCtr();
 }
@@ -458,137 +439,7 @@ void NRF()
                               uart_sendN(UART4, Send_Ampere,9);
            
                           }break;
-           /*               
-                          case 0x03:      //舵机控制
-                          {
-                              
-                              servo_num = ( NRF_Rx_dat[NRF_receive_num-4]*256 + NRF_Rx_dat[NRF_receive_num-3]-4 )/11;
-                              for(i=0;i<(NRF_receive_num-8)/11;i++)
-                              {
-                                  servo_dat[5*i]= NRF_Rx_dat[11*i+5];
-                                  servo_dat[5*i+1]= NRF_Rx_dat[11*i+7];
-                                  servo_dat[5*i+2]= NRF_Rx_dat[11*i+8];
-                                  servo_dat[5*i+3]= NRF_Rx_dat[11*i+13];
-                                  servo_dat[5*i+4]= NRF_Rx_dat[11*i+14];
-                              }
-                              ONline_RUN=1;
-                              Offline_RUN=0;
-                              txbuf[0]=8;
-                              for(i=0;i<8;i++)
-                              {
-                                  txbuf[i+1]=Servo_dat_ACK[i];
-                              }
-      //                         uart_sendN(UART4, Servo_dat_ACK,8);
-      //                        uart_putchar(UART4,NRF_Rx_dat[NRF_receive_num-3]);
-                              uart_sendN(UART4, servo_dat,servo_num*5);           //反馈处理后信息，调试用
-      
-                          }break;
-                          case 0x04:    //舵机控制
-                          {
-                              
-                          }break;
-                          case 0x05:    //电机控制
-                          {
-                              txbuf[0]=8;
-                              for(i=0;i<8;i++)
-                              {
-                                  txbuf[i+1]=Motor_dat_ACK[i];
-                              }
-                              uart_sendN(UART4, Motor_dat_ACK,8);
-                          }break;
-                          case 0x06:    //在线运行动作组
-                          {
-                              servo_num = ( NRF_Rx_dat[NRF_receive_num-4]*256 + NRF_Rx_dat[NRF_receive_num-3]-4 )/11;
-                              for(i=0;i<(NRF_receive_num-8)/11;i++)
-                              {
-                                  servo_dat[5*i]= NRF_Rx_dat[11*i+5];
-                                  servo_dat[5*i+1]= NRF_Rx_dat[11*i+7];
-                                  servo_dat[5*i+2]= NRF_Rx_dat[11*i+8];
-                                  servo_dat[5*i+3]= NRF_Rx_dat[11*i+13];
-                                  servo_dat[5*i+4]= NRF_Rx_dat[11*i+14];
-                              }
-                              ONline_RUN=1;
-                              Offline_RUN=0;
-                              txbuf[0]=8;
-                              for(i=0;i<8;i++)
-                              {
-                                  txbuf[i+1]=RUN_Online_Ack[i];
-                              }
-                              uart_sendN(UART4, RUN_Online_Ack,8);
-                          }break;
-                          case 0x07:   //在线循环运行动作组
-                          {
-                              servo_num = ( NRF_Rx_dat[NRF_receive_num-4]*256 + NRF_Rx_dat[NRF_receive_num-3]-4 )/11;
-                              for(i=0;i<(NRF_receive_num-8)/11;i++)
-                              {
-                                  servo_dat[5*i]= NRF_Rx_dat[11*i+5];
-                                  servo_dat[5*i+1]= NRF_Rx_dat[11*i+7];
-                                  servo_dat[5*i+2]= NRF_Rx_dat[11*i+8];
-                                  servo_dat[5*i+3]= NRF_Rx_dat[11*i+13];
-                                  servo_dat[5*i+4]= NRF_Rx_dat[11*i+14];
-                              }
-                              ONline_RUN=1;
-                              Offline_RUN=0;
-                              txbuf[0]=8;
-                              for(i=0;i<8;i++)
-                              {
-                                  txbuf[i+1]=RUN_Online_loop_Ack[i];
-                              }
-                              uart_sendN(UART4, RUN_Online_loop_Ack,8);
-                          }break;
-                          case 0x08:  //在线停止运行动作组
-                          {
-                              
-                          }break;
-                          case 0x09:  //EEPROM初始化
-                          {
-      
-                          }break;
-                          case 0x0a:  //下载动作组
-                          {
-                              ONline_RUN=0;                          
-                              Offline_RUN=0;
-                              servo_SQ = NRF_Rx_dat[6];
-                              servo_group_num[servo_SQ]=(NRF_receive_num-11)/(11*32);
-                              for(i=0;i<(NRF_receive_num-11)/11;i++)
-                              {
-                                  servo_dat[5*i]= NRF_Rx_dat[11*i+8];
-                                  servo_dat[5*i+1]= NRF_Rx_dat[11*i+10];
-                                  servo_dat[5*i+2]= NRF_Rx_dat[11*i+11];
-                                  servo_dat[5*i+3]= NRF_Rx_dat[11*i+16];
-                                  servo_dat[5*i+4]= NRF_Rx_dat[11*i+17];
-                              }
-                              if(servo_SQ<13)
-                              {
-                                  WriteAT24C1024_byte(servo_SQ*5000,servo_group_num[servo_SQ],0x00);
-                                  DelayMs1(10);
-                                  WriteAT24C1024_flash(servo_dat,servo_SQ*5000+1,0x00,servo_group_num[servo_SQ]*160);
-                              }
-                              else
-                              {
-      
-                                  WriteAT24C1024_byte((servo_SQ-13)*5000,servo_group_num[servo_SQ],0x02);
-                                  DelayMs1(10);
-                                  WriteAT24C1024_flash(servo_dat,(servo_SQ-13)*5000+1,0x02,servo_group_num[servo_SQ]*160);                          
-                              }
-                              txbuf[0]=8;
-                              for(i=0;i<8;i++)
-                              {
-                                  txbuf[i+1]=EEPROM_Download_Ack[i];
-                              }
-      //                          uart_sendN(UART4, EEPROM_Download_Ack,8);
-                              uart_sendN(UART4, servo_dat,servo_group_num[servo_SQ]*160);   //反馈处理后信息，调试用
-                          }break;  
-                          case 0x0b:  //擦除动作组
-                          {
-                              txbuf[0]=8;
-                              for(i=0;i<8;i++)
-                              {
-                                  txbuf[i+1]=EEPROM_Erase_Ack[i];
-                              }
-                              uart_sendN(UART4, EEPROM_Erase_Ack,8);
-                          }break;
-              */
+          
                           case 0x0c:  //脱机运行动作组
                           {
                               ONline_RUN=0;                          
@@ -604,15 +455,12 @@ void NRF()
                                   servo_group_num[servo_SQ]=ReadAT24C1024_byte((servo_SQ-13)*5000,0x02);
                                   ReadAT24C1024_flash(servo_dat,(servo_SQ-13)*5000+1,0x02,servo_group_num[servo_SQ]*160);                          
                               }
- //                             uart_putchar(UART4,servo_group_num[servo_SQ]);
-//                              uart_sendN(UART4, servo_dat,servo_group_num[servo_SQ]*160);     //反馈处理后信息，调试用
                               RUN_Offline_Ack[4]= servo_SQ;
                               txbuf[0]=8;
                               for(i=0;i<8;i++)
                               {
                                   txbuf[i+1]=RUN_Offline_Ack[i];
                               }
-      //                         uart_sendN(UART4, RUN_Offline_Ack,8);
                           }break;
                           case 0x0d:  //脱机停止动作组
                           {
