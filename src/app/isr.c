@@ -111,34 +111,6 @@ void motionCtr(){
 
 
 
-
-
-///////////////////////////电压检测////////////////////////
-u16 vol;
-u8 vol_H,vol_L;
-
-void Voltage()
-{
-      Read_ADC(ADC1, &vol);             //查询方式读取AD转换结果
-      vol=(13200*vol)/((1<<16)-1);      //v=（ad转换后的数值/65535（十六位位精度））*参考电压
-      
-      vol_H = vol/1000;                 //整数部分
-      vol_L = vol%1000/100;             //小数部分
-      
-      Send_Voltage[4] = vol_H;
-      Send_Voltage[5] = vol_L;
-/*      
-      if(vol<4000)
-      {
-          DelayUs(500);
-          PTC14_OUT=0;
-          DelayUs(500);
-          PTC14_OUT=1;
-      }
-*/      
-}
-
-
 /////////////////////////串口接收数据/////////////////////////////////////
 u8 uart_Rx_dat[10000];
 u32 receive_add;    //串口接收数据长度  
@@ -540,92 +512,6 @@ void NRF()
     }
 }
 
-///////////////////////////wifi通信////////////////////////
-u8 wifi_receive;
-u8 wifi_read_num=1;
-
-void wifi()
-{
-    if( uart_query(UART1)!=0 )
-    {
-          wifi_receive=uart_getchar(UART1);
-//          uart_putchar(UART1,wifi_receive);
-    }  
-    switch(wifi_receive)
-    {
-    
-        case 0x00:
-        {
-
-            servo_SQ=0;
-            servo_group_num[servo_SQ]=ReadAT24C1024_byte(servo_SQ*5000,0x00);
-            if(servo_group_num[servo_SQ]!=0)
-            {            
-                ReadAT24C1024_flash(servo_dat,servo_SQ*5000+1,0x00,servo_group_num[servo_SQ]*160); 
-            }
-
-            wifi_read_num=1;
-        }break;
-        case 0x01:
-        {
-            if(wifi_read_num==1)
-            {
-                servo_SQ=1;
-                servo_group_num[servo_SQ]=ReadAT24C1024_byte(servo_SQ*5000,0x00);
-                if(servo_group_num[servo_SQ]!=0)
-                {            
-                    ReadAT24C1024_flash(servo_dat,servo_SQ*5000+1,0x00,servo_group_num[servo_SQ]*160); 
-                }
-                wifi_read_num=2;
-            } 
-        }break;
-        case 0x02:
-        {
-            if(wifi_read_num==1)
-            {
-                servo_SQ=2;
-                servo_group_num[servo_SQ]=ReadAT24C1024_byte(servo_SQ*5000,0x00);
-                if(servo_group_num[servo_SQ]!=0)
-                {            
-                    ReadAT24C1024_flash(servo_dat,servo_SQ*5000+1,0x00,servo_group_num[servo_SQ]*160); 
-                }
-                wifi_read_num=2;
-            }
-        }break;
-        case 0x03:
-        {
-            if(wifi_read_num==1)
-            {
-                servo_SQ=3;
-                servo_group_num[servo_SQ]=ReadAT24C1024_byte(servo_SQ*5000,0x00);
-                if(servo_group_num[servo_SQ]!=0)
-                {            
-                    ReadAT24C1024_flash(servo_dat,servo_SQ*5000+1,0x00,servo_group_num[servo_SQ]*160); 
-                }
-                wifi_read_num=2;
-            }
-        }break;        
-        case 0x04:
-        {
-            if(wifi_read_num==1)
-            {
-                servo_SQ=4;
-                servo_group_num[servo_SQ]=ReadAT24C1024_byte(servo_SQ*5000,0x00);
-                if(servo_group_num[servo_SQ]!=0)
-                {            
-                    ReadAT24C1024_flash(servo_dat,servo_SQ*5000+1,0x00,servo_group_num[servo_SQ]*160); 
-                }
-                wifi_read_num=2;
-            } 
-        }break;          
-        
-        
-        default: break;
-    }
-
-    
-}
-
 
 
 //////////////////////////////////////////////////////////
@@ -686,8 +572,6 @@ void system_init()
 void PIT1_IRQHandler(void)
 {
    
-    Voltage();
-    
 
     
     PIT_Flag_Clear(PIT1);       //清中断标志位
