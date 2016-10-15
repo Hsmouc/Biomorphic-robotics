@@ -74,10 +74,7 @@ void motionSwitch(u8 flag){
     if(servo_group_num[servo_SQ]!=0){
       ReadAT24C1024_flash(servo_dat,servo_SQ*5000+1,0x00,servo_group_num[servo_SQ]*160); 
     }
-  
-
   servo_run_over_mark=1;
-  motionCtr();
 }
 
 void motionCtr(){
@@ -519,38 +516,31 @@ void NRF()
 
 void system_init()
 {
-    uart_init(UART1, 9600);     //初始化串口4，波特率为19200 
-    uart_init(UART4, 19200);    //初始化串口4，波特率为19200 ,波特率太大，容易不稳定
+    uart_init(UART4, 19200);                    //初始化串口4，波特率为19200 ,波特率太大，容易不稳定
     DisableInterrupts;          //关总中断
-    uart_irq_EN(UART4);         //串口通信中断使能
+    uart_irq_EN(UART4);
     EnableInterrupts;           //开总中断 
     
-    LED_init();                 //led初始化
-    Servo_Init();               //舵机初始化
-    NRF_Init();                 //无线通信初始化
-    AT24C1024_Init();           //存储初始化
-    MPU6050_Init();             //姿态传感器初始化                
-    ADC_Init(ADC1, 3, 20);     //初始化AD1位单通道20输入，转换结果16bit, 查询模式  电压检测
+    LED_init();
+    Servo_Init();
+    NRF_Init();
+    AT24C1024_Init();
+    //MPU6050_Init();
     
-    pit_init_ms(PIT1, 100);      //初始化PIT1    
     
-    Tx_Rx_mark=1;
-    Offline_RUN=1; 
-    ONline_RUN=0;
-    system_run_mark=1;
-    system_mark=0;             //系统开始标志
-//    servo_group_num[0]=ReadAT24C1024_byte(0,0x00);
-//    ReadAT24C1024_flash(servo_dat,1,0x00,servo_group_num[0]*160);
-//    servo_init_mark=1;   //舵机上电标志  
+    pit_init_ms(PIT1, 1);                          //初始化PIT1    
+    
+    //Tx_Rx_mark=1;
+    //Offline_RUN=1; 
+    //ONline_RUN=0;
+    //system_run_mark=1;
     
     exti_init(PORTC, 18, rising_down);      //PORTC18 端口外部中断初始化 ，上升沿触发中断，内部下拉
-    exti_init(PORTC, 8, falling_down);      //PORTC8 端口外部中断初始化 ，低电平触发中断，内部下拉
-    exti_init(PORTE, 3, falling_down);      //PORTE4 端口外部中断初始化 ，低电平触发中断，内部下拉
-    exti_init(PORTE, 4, falling_down);      //PORTE4 端口外部中断初始化 ，低电平触发中断，内部下拉
-    exti_init(PORTE, 5, falling_down);      //PORTE5 端口外部中断初始化 ，低电平触发中断，内部下拉//
-    exti_init(PORTE, 6, falling_down);      //PORTE6 端口外部中断初始化 ，低电平触发中断，内部下拉
+    exti_init(PORTC, 8, falling_down);       //PORTC8 端口外部中断初始化 ，低电平触发中断，内部下拉
+    //exti_init(PORTE, 4, falling_down);      //PORTE4 端口外部中断初始化 ，低电平触发中断，内部下拉
+    //exti_init(PORTE, 5, falling_down);      //PORTE5 端口外部中断初始化 ，低电平触发中断，内部下拉//
+    //exti_init(PORTE, 6, falling_down);      //PORTE6 端口外部中断初始化 ，低电平触发中断，内部下拉
         
-    exti_init(PORTC, 2, falling_down);      //PORTC2 端口外部中断初始化 ，低电平触发中断，内部下拉
 }
 
 
@@ -628,32 +618,3 @@ void DMA0_IRQHandler()
     DMA_IRQ_CLEAN(CAMERA_DMA_CH);           //清除通道传输中断标志位
 }
 
-void PORTE_IRQHandler()
-{
-
-    //红外中断
-     if(PORTE_ISFR & (1 << 4))           //PTE 4 6触发中断
-    {
-
-        PORTE_ISFR  |= (1 << 4);        //写1清中断标志位
-
-        //  以下为用户任务  
-        system_run_mark=0;
-//        servo_control_mark=0;
-        hw_read_mark=1;
-        //  以上为用户任务  
-    }
-  
-    if(PORTE_ISFR & (1 << 6))           //PTE 4 6触发中断
-    {
-        PORTE_ISFR  |= (1 << 6);        //写1清中断标志位
-        // 以下为用户任务  
-        system_run_mark=0;
-//        servo_control_mark=0;
-        hw_read_mark=1;
-        //  以上为用户任务  
-    }
- 
-    
-    
-}
