@@ -61,8 +61,8 @@ extern void PIT1_IRQHandler();                 //PIT1 定时中断服务函数
 
 
 
-extern void motionCtr();
-extern void motionSwitch(u8);
+extern void motionGet(u8,u8*);
+extern void motionCtr(u8*);
 
 #endif  //__ISR_H
 

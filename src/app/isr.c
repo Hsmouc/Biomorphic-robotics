@@ -52,7 +52,6 @@ u8 Send_ID[9]            = {0x40,0x5b,0x53,0x11,0x00,0x00,0x06,0x5d,0x25};      
 //每个动作组是由一个或多个动作组成，每个动作是由一个或多个舵机组成
 // 存放顺序 舵机号 1个字节 舵机位置 2个字节 运行时间 2个字节
 // 每个舵机信息5个字节，一个动作32个舵机信息
-u8 servo_dat[5000]; 
 u8 servo_num;                    //每个动作中舵机个数
 u8 servo_group_num[100];        //动作组中动作个数
 u32 servo_position_set[32];     //舵机设置位置
@@ -63,7 +62,7 @@ u8  servo_run_over[32];        //舵机达到设置位置标志
 u8  servo_run_over_mark=1;     //舵机全部达到指定位置标志
 u8 servo_control_mark=1; 
 
-void motionSwitch(u8 flag){
+void motionGet(u8 flag,u8 *servo_dat){ 
   system_run_mark=1;
   servo_control_mark=1;
   //read_mark=1;
@@ -77,7 +76,7 @@ void motionSwitch(u8 flag){
   servo_run_over_mark=1;
 }
 
-void motionCtr(){
+void motionCtr(u8 *servo_dat){
   j=0;
   while(j<servo_group_num[servo_SQ]){
     if(servo_run_over_mark)  //所有舵机到达设置位置后读取下一个动作值
@@ -516,7 +515,7 @@ void NRF()
 
 void system_init()
 {
-    uart_init(UART4, 19200);                    //初始化串口4，波特率为19200 ,波特率太大，容易不稳定
+    uart_init(UART4, 115200);                    //初始化串口4，波特率为19200 ,波特率太大，容易不稳定
     DisableInterrupts;          //关总中断
     uart_irq_EN(UART4);
     EnableInterrupts;           //开总中断 

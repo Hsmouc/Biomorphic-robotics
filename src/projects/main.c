@@ -50,29 +50,30 @@ int imgProcess(void){
 
 
 void  main(void) {
-
+    
+    u8 left[5000];
+    u8 right[5000];
+    u8 forward[5000];
     system_init();
     //gpio_init(PORTC,14,GPO,HIGH);
-    
-       
+    motionGet(0,forward);
+    motionGet(1,left);
+    motionGet(2,right);
     while(1){
-      
         Ov7725_Init(image_bin);
         ov7727_get_img();
         img_extract(image_bin,img,CAMERA_SIZE);
         imgErr = imgProcess();
-        if(imgErr < -25){
-           flag = 1;
+        if(imgErr < -22){
+          motionCtr(left);
         }   
-        if(imgErr > 25) {
-           flag = 2;
+        if(imgErr > 22) {
+           motionCtr(right);
         }
-        if(imgErr >= -25 && imgErr <= 25){
-          flag = 0;
+        if(imgErr >= -22 && imgErr <= 22){
+           motionCtr(forward);
         }
-        motionSwitch(flag);
-        motionCtr();
-        sendimg(img,CAMERA_W * CAMERA_H);
+        //sendimg(img,CAMERA_W * CAMERA_H);
     }
 }
 
