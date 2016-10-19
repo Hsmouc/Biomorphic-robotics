@@ -47,10 +47,10 @@ extern void system_init();
  */
 
 #undef  VECTOR_016                        //取消中断号的定义
-#define VECTOR_016    DMA0_IRQHandler    //PORTE中断
+#define VECTOR_016    DMA0_IRQHandler    //DMA中断
 
 #undef  VECTOR_105                        //取消中断号的定义
-#define VECTOR_105    PORTC_IRQHandler    //PORTE中断
+#define VECTOR_105    PORTC_IRQHandler    //PORTC中断
 
 extern void PORTC_IRQHandler();           //PORTA中断服务函数
 extern void DMA0_IRQHandler();
@@ -59,7 +59,9 @@ extern void DMA0_IRQHandler();
 #define VECTOR_085    PIT1_IRQHandler     //重新定义85号中断为PIT1_IRQHandler中断
 extern void PIT1_IRQHandler();                 //PIT1 定时中断服务函数
 
-
+#undef  VECTOR_107                        //取消中断号的定义
+#define VECTOR_107    PORTE_IRQHandler    //PORTE中断
+extern void PORTE_IRQHandler();           //PORTE中断服务函数
 
 extern void motionGet(u8,u8*);
 extern void motionCtr(u8*);

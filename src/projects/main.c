@@ -6,13 +6,13 @@
 #include "common.h"
 #include "include.h"
 #include "math.h"
-u32 fuck;
 u32 LEdge,REdge;
 u8 image_bin[CAMERA_SIZE]; 
 u8 img[CAMERA_W * CAMERA_H];
 int imgErr;
 int mid = 160;
 u8 flag = 0;
+extern u8 read_mark;
 
 void sendimg(void *imgaddr, uint32_t imgsize)
 {
@@ -26,8 +26,6 @@ void sendimg(void *imgaddr, uint32_t imgsize)
 int imgProcess(void){
   u32 i;
   int err;
-  //u8 min = 0;
-  //u8 max = 300;
   LEdge = 10;
   REdge = 310;
   for(i = 320*50+mid; i < 320*50+310 ;i++){
@@ -55,7 +53,6 @@ void  main(void) {
     u8 right[5000];
     u8 forward[5000];
     system_init();
-    //gpio_init(PORTC,14,GPO,HIGH);
     motionGet(0,forward);
     motionGet(1,left);
     motionGet(2,right);
@@ -64,6 +61,8 @@ void  main(void) {
         ov7727_get_img();
         img_extract(image_bin,img,CAMERA_SIZE);
         imgErr = imgProcess();
+        if(hw_read_mark == 1)
+          gpio_init(PORTC,14,GPO,HIGH);
         if(imgErr < -22){
           motionCtr(left);
         }   
@@ -73,6 +72,7 @@ void  main(void) {
         if(imgErr >= -22 && imgErr <= 22){
            motionCtr(forward);
         }
+       // hw_read_mark = 0;
         //sendimg(img,CAMERA_W * CAMERA_H);
     }
 }

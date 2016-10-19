@@ -536,9 +536,9 @@ void system_init()
     
     exti_init(PORTC, 18, rising_down);      //PORTC18 端口外部中断初始化 ，上升沿触发中断，内部下拉
     exti_init(PORTC, 8, falling_down);       //PORTC8 端口外部中断初始化 ，低电平触发中断，内部下拉
-    //exti_init(PORTE, 4, falling_down);      //PORTE4 端口外部中断初始化 ，低电平触发中断，内部下拉
+    exti_init(PORTE, 4, falling_down);      //PORTE4 端口外部中断初始化 ，低电平触发中断，内部下拉
     //exti_init(PORTE, 5, falling_down);      //PORTE5 端口外部中断初始化 ，低电平触发中断，内部下拉//
-    //exti_init(PORTE, 6, falling_down);      //PORTE6 端口外部中断初始化 ，低电平触发中断，内部下拉
+    exti_init(PORTE, 6, falling_down);      //PORTE6 端口外部中断初始化 ，低电平触发中断，内部下拉
         
 }
 
@@ -617,3 +617,21 @@ void DMA0_IRQHandler()
     DMA_IRQ_CLEAN(CAMERA_DMA_CH);           //清除通道传输中断标志位
 }
 
+void PORTE_IRQHandler()
+{
+
+    if(PORTE_ISFR & (1 << 4) || PORTE_ISFR & (1 << 6))           //PTE4 5 6触发中断
+    {
+        read_mark = 1;
+        PORTE_ISFR  |= (1 << 4);        //写1清中断标志位      //写1清中断标志位
+        PORTE_ISFR  |= (1 << 6);        //写1清中断标志位
+        /*  以下为用户任务  */
+        //LED(LED3,LED_ON);
+        //system_run_mark=0;
+        //servo_control_mark=0;
+        hw_read_mark=1;
+        /*  以上为用户任务  */
+       
+    }
+
+}
